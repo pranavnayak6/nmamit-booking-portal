@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NMAMIT Bookings</title>
+<style>
+:root{--bg:#F3F5F9;--card:#fff;--ink:#0E1B33;--mut:#4A5570;--line:#DDE2EC;--pri:#14325F;--acc:#C2410C;--off:#F5F7FB;--chip:#E8EEF9;--bad:#B42318;--warn-bg:#FFF4E5;--warn:#5A2E00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1220;--card:#131C30;--ink:#E8EDF7;--mut:#A3AFC8;--line:#26324D;--pri:#7FA6E8;--acc:#F28B54;--off:#0F1729;--chip:#1C2845;--bad:#FF8A80;--warn-bg:#3A2A10;--warn:#FFD9A8}}
+:root[data-theme="dark"]{--bg:#0B1220;--card:#131C30;--ink:#E8EDF7;--mut:#A3AFC8;--line:#26324D;--pri:#7FA6E8;--acc:#F28B54;--off:#0F1729;--chip:#1C2845;--bad:#FF8A80;--warn-bg:#3A2A10;--warn:#FFD9A8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.btn{min-height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--line);background:var(--card);font-weight:600}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.p:disabled{opacity:.5;cursor:not-allowed}
+header{background:#14325F;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header b{font-size:19px}
+header .btn{background:transparent;color:#fff;border-color:#5E7AA8;min-height:36px}
+.wrap{display:grid;grid-template-columns:230px 1fr 290px;gap:20px;padding:20px;max-width:1440px;margin:0 auto}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:12px;padding:18px;border:1px solid var(--line)}
+h2{font-size:16px;margin:18px 0 6px}h2:first-child{margin-top:0}
+.vr{display:flex;align-items:center;gap:10px;min-height:40px}
+.vr i,.ch i{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.bar h1{font-size:26px;margin:0}
+.nav{display:flex;gap:6px;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-right:0;border-bottom:0;border-radius:12px;overflow:hidden;background:var(--card)}
+.dh{padding:8px;font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.cell{min-height:104px;padding:6px;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--card);text-align:left;display:flex;flex-direction:column;gap:3px;min-width:0}
+.cell.o{background:var(--off);color:var(--mut)}
+.cell.s{outline:3px solid var(--pri);outline-offset:-3px}
+.d{font-size:13px;font-weight:600;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.d.t{background:var(--pri);color:var(--card)}
+.ch{display:flex;align-items:center;gap:5px;font-size:12px;padding:2px 6px;border-radius:6px;background:var(--chip);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch.p{background:transparent;border:1px dashed var(--mut)}
+.more{font-size:12px;color:var(--mut)}
+@media(max-width:640px){.cell{min-height:64px}.ch span{display:none}.ch{padding:2px;width:fit-content}}
+.bk{border-top:1px solid var(--line);padding:10px 0;font-size:14px}
+.bk:first-of-type{border-top:0}
+.tag{font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--chip)}
+.link{background:none;border:0;color:var(--bad);padding:6px 0;min-height:36px;font-weight:600}
+label{font-size:13px;font-weight:600;display:block;margin-bottom:4px}
+.f{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+textarea.f{padding:10px 12px;min-height:80px}
+.row{display:flex;gap:12px}.row>div{flex:1;min-width:0}
+.fld{margin-bottom:12px}
+.ov{position:fixed;inset:0;background:rgba(8,14,28,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:5;overflow:auto}
+.ov[hidden]{display:none}
+.modal{background:var(--card);border-radius:14px;padding:24px;width:100%;max-width:520px}
+.warn{background:var(--warn-bg);color:var(--warn);border:2px solid #B85C00;border-radius:8px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+.ok{background:var(--chip);border-radius:8px;padding:10px 12px;font-size:14px;margin-bottom:12px}
+.err{color:var(--bad);font-size:13px;min-height:20px}
+#login{position:fixed;inset:0;background:#14325F;display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}
+#login .modal{max-width:420px}
+#login[hidden]{display:none}
+.seg{display:flex;align-items:center;gap:4px;font-size:13px}
+.seg .btn{padding:0 12px}
+.seg .btn[aria-pressed="true"]{background:#fff;color:#14325F;border-color:#fff}
+.ra{display:flex;gap:8px;margin-top:8px}.ra .btn{flex:1;min-height:44px}.ra .no{border-color:var(--bad);color:var(--bad)}.cw{font-size:13px;color:var(--bad);margin-top:4px}
+.btn.no{border-color:var(--bad);color:var(--bad)}
+.seg2{display:flex;gap:4px}.seg2 .btn[aria-pressed="true"]{background:var(--pri);color:var(--card);border-color:var(--pri)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%}
+.trk{flex:1;position:relative;height:40px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(100%/12 - 1px),var(--line) calc(100%/12 - 1px),var(--line) calc(100%/12))}
+.bar2{position:absolute;top:3px;bottom:3px;border:2px solid;border-radius:5px;background:var(--chip);font-size:12px;padding:0 6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;display:flex;align-items:center;cursor:default}
+.bar2.p{background:transparent;border-style:dashed}
+#bc:not(:empty){background:var(--acc);color:#fff;border-radius:99px;padding:0 6px;margin-left:4px;font-size:12px}
+.dock{display:none}
+.mo{display:none}
+@media(max-width:700px){
+.mo{display:flex}
+body[data-bar="top"]{padding-top:76px;padding-bottom:0}
+body[data-bar="top"] .dock{top:0;bottom:auto;border-top:0;border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px}
+body[data-bar="top"] .ov{align-items:flex-start}
+body[data-bar="top"] .modal{border-radius:0 0 18px 18px;display:flex;flex-direction:column}
+body[data-bar="top"] .acts{order:-1;margin-bottom:14px}
+body{padding-bottom:96px}
+.mh{display:none}
+.dock{display:flex;justify-content:space-between;align-items:center;gap:10px;position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);z-index:4}
+.dn{display:flex;gap:8px}
+.dock .btn{min-height:52px;min-width:52px}
+.dock .fab{flex:1;font-size:16px}
+.ov{align-items:flex-end;padding:0}
+.modal{border-radius:18px 18px 0 0;max-width:none;max-height:92vh;overflow:auto}
+.acts{display:flex;gap:10px}
+.acts .btn{flex:1;min-height:52px}
+}
+
+:root{--bg:#F1F5FB}
+header{background:linear-gradient(135deg,#14325F,#1F4E8C)}
+.card{border-radius:16px;border-color:transparent;box-shadow:0 2px 12px rgba(20,50,95,.07)}
+.grid{border-radius:16px;box-shadow:0 2px 12px rgba(20,50,95,.07)}
+.btn{border-radius:10px;transition:transform .15s,box-shadow .15s,background .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(20,50,95,.12)}
+.btn:active{transform:none}
+.btn.p{box-shadow:0 2px 8px rgba(194,65,12,.28)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.cell{transition:background .15s}.cell:hover{background:var(--chip)}
+.cell.s{outline-color:var(--acc)}
+.d.t{background:var(--acc);color:#fff}
+.ch{border-radius:99px;padding:3px 9px}
+.f{border-radius:10px}.f:focus{outline:3px solid color-mix(in srgb,var(--acc) 35%,transparent);border-color:var(--acc)}
+.modal{border-radius:20px;animation:up .22s ease}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.hi{margin-bottom:14px}.hi h1{font-size:26px;margin:0}.hi p{margin:2px 0 0;color:var(--mut)}
+#toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#14325F;color:#fff;padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:all .25s;z-index:20;max-width:90vw;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:700px){#toast{bottom:100px}.dock .fab{font-size:17px;border-radius:14px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="login"><div class="modal"><div id="ul">
+<h1 style="font-size:26px;margin:0 0 6px">Welcome to NMAMIT Bookings</h1>
+<p style="color:var(--mut);margin:0 0 16px">Plan your event in a minute: pick a venue and a time, then send the request.</p>
+<label for="em" id="emlab">College email</label>
+<input class="f" id="em" type="email" placeholder="name@nmamit.in">
+<div class="err" id="emerr" role="alert"></div>
+<button class="btn p" id="go" style="width:100%;margin-top:6px">Let's go</button>
+<p style="font-size:13px;color:var(--mut)">Only @nmamit.in and @nitte.in accounts are allowed. Demo sign-in: no password or email link is sent.</p>
+<button class="link" id="toad" style="color:var(--pri)">Admin sign-in</button></div><div id="al" hidden><h1 style="font-size:26px;margin:0 0 12px">Admin sign-in</h1><div class="fld"><label for="au">Username</label><input class="f" id="au" autocomplete="username"></div><div class="fld"><label for="ap">Password</label><input class="f" id="ap" type="password" autocomplete="current-password"></div><div class="err" id="aerr" role="alert"></div><button class="btn p" id="adgo" style="width:100%">Sign in as admin</button><button class="link" id="tous" style="color:var(--pri)">Back to student sign-in</button></div></div></div>
+
+<header><b>NMAMIT Bookings</b><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div class="seg mo" role="group" aria-label="Bar position"><span>Bar:</span><button class="btn" id="bt_top" aria-pressed="false">Top</button><button class="btn" id="bt_bot" aria-pressed="true">Bottom</button></div><button class="btn" id="bell">Alerts<span id="bc"></span></button><span id="who" style="font-size:14px"></span><button class="btn" id="out">Sign out</button></div></header>
+
+<div class="wrap">
+<aside class="card">
+<button class="btn p" id="new" style="width:100%">New booking</button>
+<h2 style="margin-top:20px">Venues</h2><div id="vf"></div>
+<h2>Legend</h2><span class="ch" style="width:fit-content">Confirmed</span><br><span class="ch p" style="width:fit-content;margin-top:6px">Pending approval</span>
+<button class="btn" id="mg" hidden style="width:100%;margin-top:20px">Manage venues</button>
+</aside>
+<main>
+<div class="bar">
+<div class="nav"><button class="btn mh" id="pv" aria-label="Previous month">&lsaquo;</button><h1 id="mt"></h1><button class="btn mh" id="nx" aria-label="Next month">&rsaquo;</button><button class="btn" id="td">Today</button></div>
+</div>
+<div class="hi" id="hi"></div><div id="st" style="display:none;gap:10px;flex-wrap:wrap;margin-bottom:12px"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><input class="f" id="q" placeholder="Search events" aria-label="Search events" style="max-width:240px"><div class="seg2"><button class="btn" id="vm" aria-pressed="true">Month</button><button class="btn" id="vt" aria-pressed="false">Timeline</button></div></div><div class="grid" id="cal"></div><div class="card" id="tl" style="display:none;overflow-x:auto"></div>
+</main>
+<aside class="card">
+<h2 id="dt" style="font-size:20px"></h2>
+<div id="dl"></div>
+<button class="btn" id="bd" style="width:100%;margin-top:12px">Book this day</button>
+<div id="adm" hidden><h2 style="margin-top:24px">Booking requests <span class="tag" id="pc"></span></h2><div id="rq"></div></div><div id="mywrap"><h2 style="margin-top:24px">My bookings</h2><div id="mine"></div></div>
+</aside>
+</div>
+
+<div class="ov" id="hov" hidden><div class="modal" id="hbox" role="dialog" aria-modal="true" aria-labelledby="hh"></div></div>
+
+<div class="dock"><button class="btn" id="dpv" aria-label="Previous month">&lsaquo;</button><button class="btn p fab" id="dnew">+ Book</button><button class="btn" id="dnx" aria-label="Next month">&rsaquo;</button></div>
+
+<div class="ov" id="ov" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mh">
+<h2 id="mh" style="font-size:22px">New booking</h2>
+<div class="fld"><label for="bt">Event title</label><input class="f" id="bt"></div>
+<div class="row fld"><div><label for="bv">Venue</label><select class="f" id="bv"></select></div><div><label for="bdte">Date</label><input class="f" id="bdte" type="date"></div></div>
+<div class="row fld"><div><label for="bs">Start</label><input class="f" id="bs" type="time" value="10:00"></div><div><label for="be">End</label><input class="f" id="be" type="time" value="12:00"></div></div>
+<div class="row fld"><div><label for="bn">Expected attendees</label><input class="f" id="bn" type="number" min="1"></div><div><label>Quick duration</label><div style="display:flex;gap:6px"><button class="btn" data-du="60" style="padding:0 10px;flex:1">1 h</button><button class="btn" data-du="120" style="padding:0 10px;flex:1">2 h</button><button class="btn" data-du="240" style="padding:0 10px;flex:1">4 h</button></div></div></div>
+<div id="vi"></div>
+<div class="fld"><label for="bp">Purpose and requirements</label><textarea class="f" id="bp"></textarea></div>
+<div id="bm"></div>
+<div class="acts" style="justify-content:flex-end"><button class="btn" id="bc">Cancel</button><button class="btn p" id="bsub">Submit for approval</button></div>
+</div></div>
+
+<script>
+var VEN=[{id:'sam',n:'Sambhram',c:'#1F4E8C'},{id:'shm',n:'Shambhavi',c:'#B85C00'},{id:'sad',n:'Sadananda',c:'#7C5BC2'},{id:'amp',n:'Amphitheatre',c:'#1B7A4B'},{id:'pha',n:'Phalguni',c:'#C23B65'},{id:'abh',n:'Abhyuday Hall',c:'#0E7C86'},{id:'con',n:'Conference Room',c:'#8A6D00'},{id:'vis',n:'Vista Lab',c:'#5A6478'}];
+var SEED=[
+['Orientation','sam','2026-10-01','09:00','11:00','hod@nmamit.in','ok'],['Guest lecture','sam','2026-10-02','10:00','12:00','dean@nitte.in','ok'],
+['Football trials','amp','2026-10-03','16:00','18:00','sports@nmamit.in','ok'],['Faculty meet','con','2026-10-05','11:00','12:30','hod@nmamit.in','ok'],
+['Robotics meet','shm','2026-10-07','10:00','13:00','robotics@nmamit.in','ok'],['Workshop','sad','2026-10-07','14:00','16:00','ieee@nmamit.in','pending'],
+['Mock interviews','sad','2026-10-09','09:00','13:00','placement@nitte.in','ok'],['Club fair','sam','2026-10-09','13:00','16:00','clubs@nmamit.in','ok'],
+['Alumni talk','sam','2026-10-14','10:00','12:00','alumni@nmamit.in','pending'],['Hackathon','shm','2026-10-17','09:00','18:00','acm@nmamit.in','ok'],
+['Cricket match','amp','2026-10-24','16:00','18:00','sports@nmamit.in','ok']];
+var KEY='nmamit-bookings-v2',UKEY='nmamit-user-v1';
+var B=[],user=null,flt={};VEN.forEach(function(v){flt[v.id]=true});
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+var qv='',tlv=false;function pd(n){return String(n).padStart(2,'0')}function tm(t){return (+t.slice(0,2))*60+(+t.slice(3))}
+var HKEY='nmamit-halls-v1';VEN.forEach(function(v){v.cap='';v.loc='';v.fac='';v.on=true});
+var PAL=['#1F4E8C','#B85C00','#7C5BC2','#1B7A4B','#C23B65','#0E7C86','#8A6D00','#5A6478','#A63D2F','#2E6F9E'];
+function saveHalls(){}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+var now=new Date(),todayIso=iso(now),Y=now.getFullYear(),M=now.getMonth(),sel=todayIso;
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function ven(id){return VEN.filter(function(v){return v.id===id})[0]}
+function $(i){return document.getElementById(i)}
+var TOKEN=lsGet('nmamit-token')||'',OTPMAIL=null;
+var GAS_URL='https://script.google.com/macros/s/AKfycbxGqOy9jOfbzIQRG0i93m5_ydVhlYrCN6pfkTP0WnjuQFy9X73hpdQTQ1JjuINzTsbZng/exec';
+var ACT={'POST /auth/request-otp':'requestOtp','POST /auth/verify':'verify','POST /admin/login':'adminLogin','GET /me':'me','GET /all':'all','POST /bookings':'addBooking','PATCH /bookings/:id':'decide','DELETE /bookings/:id':'cancel','POST /bookings/seen':'seen','POST /venues':'saveVenue','PUT /venues/:id':'saveVenue','DELETE /venues/:id':'deleteVenue'};
+function api(m,p,b){var a=p.split('/').filter(Boolean),body=Object.assign({},b||{}),k=p;
+ if(a[0]==='bookings'&&a[1]&&a[1]!=='seen'){k='/bookings/:id';body.id=a[1]}else if(a[0]==='venues'&&a[1]){k='/venues/:id';body.id=a[1]}
+ body.action=ACT[m+' '+k];body.token=TOKEN;
+ if(GAS_URL.indexOf('PASTE')===0)return Promise.reject(new Error('Add your Apps Script web app URL in index.html first.'));
+ return fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}).then(function(r){return r.json()},function(){throw new Error('Could not reach the Google Sheet. Check your internet and the web app URL.')}).then(function(j){if(j.error){var e=new Error(j.error);e.status=j.status;throw e}return j})}
+function load(){return api('GET','/all').then(function(a){VEN.length=0;a.venues.forEach(function(v){VEN.push(v)});B=a.bookings})}
+function refresh(){return load().then(function(){renderFilters();fillVenues();renderAll()}).catch(function(e){if(e.status===401)signOut();else toast(e.message)})}
+function save(){}
+function resetLogin(){OTPMAIL=null;$('em').type='email';$('em').value='';$('em').placeholder='name@nmamit.in';$('emlab').textContent='College email';$('go').textContent="Let's go";$('emerr').textContent=''}
+function signOut(){user=null;admin=null;TOKEN='';lsSet('nmamit-token','');resetLogin();$('ul').hidden=false;$('al').hidden=true;$('login').hidden=false}
+function okMail(e){return /^[^\s@]+@(nmamit\.in|nitte\.in)$/i.test(e.trim())}
+function chip(b){var v=ven(b.v);return '<span class="ch'+(b.st==='pending'?' p':'')+'"><i style="background:'+v.c+'"></i><span>'+b.s+' '+esc(b.t)+'</span></span>'}
+function renderFilters(){$('vf').innerHTML=VEN.map(function(v){return '<div class="vr"><input type="checkbox" id="f_'+v.id+'"'+(flt[v.id]!==false?' checked':'')+' data-v="'+v.id+'"><i style="background:'+v.c+'"></i><label for="f_'+v.id+'" style="margin:0;font-weight:400;font-size:15px">'+v.n+'</label></div>'}).join('')}
+function visible(d){return B.filter(function(b){return b.d===d&&flt[b.v]!==false&&b.st!=='blocked'&&(!qv||b.t.toLowerCase().indexOf(qv)>-1)}).sort(function(a,b){return a.s<b.s?-1:1})}
+function renderCal(){
+ $('mt').textContent=new Date(Y,M,1).toLocaleString('en-IN',{month:'long',year:'numeric'});
+ var first=new Date(Y,M,1),off=(first.getDay()+6)%7,days=new Date(Y,M+1,0).getDate(),total=Math.ceil((off+days)/7)*7;
+ var h=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(function(d){return '<div class="dh">'+d+'</div>'}).join('');
+ for(var i=0;i<total;i++){var d=new Date(Y,M,1-off+i),k=iso(d),o=d.getMonth()!==M,ev=visible(k);
+  h+='<button class="cell'+(o?' o':'')+(k===sel?' s':'')+'" data-d="'+k+'" aria-label="'+d.toDateString()+', '+ev.length+' bookings"><span class="d'+(k===todayIso?' t':'')+'">'+d.getDate()+'</span>'+ev.slice(0,2).map(chip).join('')+(ev.length>2?'<span class="more">+'+(ev.length-2)+' more</span>':'')+'</button>'}
+ $('cal').innerHTML=h}
+function renderDay(){
+ $('dt').textContent=new Date(sel+'T00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+ var h=VEN.map(function(v){var n=B.filter(function(b){return b.d===sel&&b.v===v.id&&b.st!=='blocked'}).length;
+  return '<div class="vr" style="justify-content:space-between"><span><i style="background:'+v.c+';display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px"></i>'+v.n+'</span><span class="tag">'+(n?n+' booked':'Free')+'</span></div>'}).join('');
+ var ev=B.filter(function(b){return b.d===sel&&b.st!=='blocked'}).sort(function(a,b){return a.s<b.s?-1:1});
+ h+='<h2>Schedule</h2>'+(ev.length?ev.map(function(b){return '<div class="bk"><b>'+b.s+'-'+b.e+'</b> '+esc(b.t)+'<br><span style="color:var(--mut)">'+ven(b.v).n+' · '+(b.st==='pending'?'Pending':'Confirmed')+'</span></div>'}).join(''):'<p style="color:var(--mut);margin:0">A free day! Nothing booked yet.</p>');
+ $('dl').innerHTML=h;renderReq();
+ var m=B.filter(function(b){return b.by===user}).sort(function(a,b){return a.d<b.d?-1:1});
+ $('mine').innerHTML=m.length?m.map(function(b){return '<div class="bk"><b>'+esc(b.t)+'</b><br>'+b.d+' · '+b.s+'-'+b.e+' · '+ven(b.v).n+'<br><span class="tag">'+stat(b)+'</span><br><button class="link" data-x="'+b.id+'">Cancel booking</button></div>'}).join(''):'<p style="color:var(--mut);margin:0">No bookings yet. Tap + Book to plan your first event.</p>'}
+function renderAll(){renderCal();renderDay();renderTL();renderBell();renderHi();$('cal').style.display=tlv?'none':'grid';$('tl').style.display=tlv?'block':'none'}
+function clash(){var v=$('bv').value,d=$('bdte').value,s=$('bs').value,e=$('be').value;
+ if(!d||!s||!e)return{bad:true,msg:'Fill in date and times.'};
+ if(e<=s)return{bad:true,msg:'End time must be after start time.'};
+ var c=B.filter(function(b){return b.st==='ok'&&b.v===v&&b.d===d&&s<b.e&&e>b.s})[0];
+ if(c)return{bad:true,clash:c};return{bad:false}}
+function check(){var r=clash(),m=$('bm');var vv=ven($('bv').value),inf=vv?[vv.cap?'Capacity '+vv.cap:'',vv.loc,vv.fac].filter(Boolean).map(esc).join(' · '):'';$('vi').innerHTML=inf?'<p style="margin:0 0 12px;font-size:13px;color:var(--mut)">'+inf+'</p>':'';
+ if(r.clash){m.innerHTML='<div class="warn"><strong>Time clash.</strong> '+ven(r.clash.v).n+' is booked '+r.clash.s+' to '+r.clash.e+' ('+esc(r.clash.t)+'). </div><div class="ra" style="flex-wrap:wrap;margin-bottom:12px"><button class="btn" data-ns="'+r.clash.e+'">Start at '+r.clash.e+'</button>'+alts()+'</div>'}
+ else if(r.bad){m.innerHTML='<div class="warn">'+r.msg+'</div>'}
+ else{m.innerHTML='<div class="ok">Slot is free. '+(admin?'It will be confirmed straight away.':'Your request will show as pending until an admin accepts it.')+'</div>'}
+ var nn=+$('bn').value||0;if(vv&&vv.cap&&nn>+vv.cap)m.innerHTML+='<div class="warn">'+vv.n+' seats '+vv.cap+', but you expect '+nn+'. Pick a larger venue.</div>';$('bsub').disabled=r.bad&&true;return r}
+function openM(d){$('bn').value='';$('bt').value='';$('bp').value='';$('bdte').value=d||sel;$('ov').hidden=false;check();$('bt').focus()}
+function closeM(){$('ov').hidden=true}
+var admin=null;
+function enter(){$('login').hidden=true;$('who').textContent=admin?admin+' (admin)':user;$('adm').hidden=!admin;$('bell').hidden=!!admin;$('st').style.display=admin?'flex':'none';$('mg').hidden=!admin;$('mywrap').hidden=!!admin;$('bsub').textContent=admin?'Add booking':'Submit for approval';renderAll()}
+function signIn(e,tok){TOKEN=tok;lsSet('nmamit-token',tok);user=e.toLowerCase();admin=null;enter();refresh()}
+function stat(b){return b.st==='ok'?'Confirmed':b.st==='blocked'?'Blocked'+(b.reason?': '+esc(b.reason):''):'Pending approval'}
+function okClash(b){return B.filter(function(c){return c.id!==b.id&&c.st==='ok'&&c.v===b.v&&c.d===b.d&&b.s<c.e&&b.e>c.s})[0]}
+function renderStats(){var pend=B.filter(function(b){return b.st==='pending'}).length,td=B.filter(function(b){return b.d===todayIso&&b.st==='ok'}).length,c={},top='None',mx=0;B.forEach(function(b){if(b.st==='ok')c[b.v]=(c[b.v]||0)+1});for(var k in c)if(c[k]>mx&&ven(k)){mx=c[k];top=ven(k).n}
+ $('st').innerHTML=[[pend,'Pending requests'],[td,'Events today'],[top,'Busiest venue']].map(function(a){return '<div class="card" style="padding:12px 16px;flex:1;min-width:130px"><b style="font-size:20px">'+esc(a[0])+'</b><br><span style="color:var(--mut);font-size:13px">'+a[1]+'</span></div>'}).join('')}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(window._tt);window._tt=setTimeout(function(){t.classList.remove('on')},3200)}
+function renderHi(){var h=new Date().getHours(),g=h<12?'Good morning':h<17?'Good afternoon':'Good evening',td=B.filter(function(b){return b.d===todayIso&&b.st==='ok'}),busy={};td.forEach(function(b){busy[b.v]=1});var free=VEN.filter(function(v){return v.on&&!busy[v.id]}).length,pend=B.filter(function(b){return b.st==='pending'}).length,n=td.length;
+ $('hi').innerHTML='<h1>'+g+'! 👋</h1><p>'+(admin?pend+' request'+(pend===1?'':'s')+' waiting for you, '+n+' event'+(n===1?'':'s')+' today.':n+' event'+(n===1?'':'s')+' on campus today and '+free+' venue'+(free===1?'':'s')+' still free. Ready to plan yours?')+'</p>'}
+function renderBell(){var n=user?B.filter(function(b){return b.by===user&&b.st!=='pending'&&!b.seen}).length:0;$('bc').textContent=n||''}
+function openN(){var m=B.filter(function(b){return b.by===user&&b.st!=='pending'});$('hbox').innerHTML='<h2 id="hh" style="font-size:22px">Notifications</h2>'+(m.length?m.map(function(b){return '<div class="bk"><b>'+esc(b.t)+'</b> · '+b.d+'<br>'+(b.st==='ok'?'Accepted':'Blocked'+(b.reason?': '+esc(b.reason):''))+(b.seen?'':' <span class="tag">New</span>')+'</div>'}).join(''):'<p style="color:var(--mut)">No decisions yet.</p>')+'<div class="acts" style="justify-content:flex-end;margin-top:14px"><button class="btn" id="hcl">Close</button></div>';m.forEach(function(b){b.seen=true});api('POST','/bookings/seen').catch(function(){});renderBell();$('hov').hidden=false}
+function renderTL(){if(!tlv)return;var H0=8,N=12;$('mt').textContent=new Date(sel+'T00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+ var hd='';for(var h=H0;h<H0+N;h++)hd+='<span style="flex:1;font-size:12px;color:var(--mut)">'+h+'</span>';
+ var rows=VEN.map(function(v){var bars=B.filter(function(b){return b.v===v.id&&b.d===sel&&b.st!=='blocked'}).map(function(b){var s=Math.max(tm(b.s)/60-H0,0),e=Math.min(tm(b.e)/60-H0,N);if(e<=s)return '';return '<div class="bar2'+(b.st==='pending'?' p':'')+'" style="left:'+(s/N*100)+'%;width:'+((e-s)/N*100)+'%;border-color:'+v.c+'" title="'+esc(b.t)+'">'+esc(b.t)+'</div>'}).join('');
+  return '<div style="display:flex;align-items:center;gap:8px;min-height:48px"><div style="width:120px;flex:none;font-size:13px"><i class="dot" style="background:'+v.c+'"></i> '+v.n+(v.on?'':' (closed)')+'</div><div class="trk" data-v="'+v.id+'">'+bars+'</div></div>'}).join('');
+ $('tl').innerHTML='<div style="min-width:720px"><div style="display:flex;gap:8px"><div style="width:120px;flex:none"></div><div style="flex:1;display:flex">'+hd+'</div></div>'+rows+'<p style="font-size:13px;color:var(--mut);margin:10px 0 0">Tap an empty spot on a venue row to book that hour. Hours shown 8 to 20.</p></div>'}
+function alts(){var v=$('bv').value,d=$('bdte').value,s=$('bs').value,e=$('be').value,n=+$('bn').value||0;return VEN.filter(function(x){return x.on&&x.id!==v&&!B.some(function(b){return b.st==='ok'&&b.v===x.id&&b.d===d&&s<b.e&&e>b.s})&&(!n||!x.cap||+x.cap>=n)}).slice(0,3).map(function(x){return '<button class="btn" data-sv="'+x.id+'">Use '+x.n+'</button>'}).join('')}
+function mvd(n){var d=new Date(sel+'T00:00');d.setDate(d.getDate()+n);sel=iso(d);Y=d.getFullYear();M=d.getMonth();renderAll()}
+function renderReq(){if(!admin)return;renderStats();var q=B.filter(function(b){return b.st==='pending'}).sort(function(a,b){return a.d<b.d?-1:1});
+ $('pc').textContent=q.length;
+ $('rq').innerHTML=q.length?q.map(function(b){var c=okClash(b);return '<div class="bk"><b>'+esc(b.t)+'</b><br>'+b.d+' · '+b.s+'-'+b.e+' · '+ven(b.v).n+'<br><span style="color:var(--mut)">By '+esc(b.by)+(b.p?' · '+esc(b.p):'')+'</span>'+(c?'<div class="cw">Clashes with confirmed "'+esc(c.t)+'" ('+c.s+'-'+c.e+'). Block it or ask for another slot.</div>':'')+'<label for="r_'+b.id+'" style="margin-top:8px">Reason if blocking (optional)</label><input class="f" id="r_'+b.id+'"><div class="ra"><button class="btn p" data-a="ok" data-id="'+b.id+'"'+(c?' disabled':'')+'>Accept</button><button class="btn no" data-a="blocked" data-id="'+b.id+'">Block</button></div></div>'}).join(''):'<p style="color:var(--mut);margin:0">All caught up! No pending requests.</p>'}
+$('vf').addEventListener('change',function(e){flt[e.target.dataset.v]=e.target.checked;renderAll()});
+$('cal').addEventListener('click',function(e){var c=e.target.closest('.cell');if(!c)return;sel=c.dataset.d;var d=new Date(sel+'T00:00');Y=d.getFullYear();M=d.getMonth();renderAll()});
+$('pv').onclick=function(){if(tlv){mvd(-1);return}M--;if(M<0){M=11;Y--}renderCal()};
+$('nx').onclick=function(){if(tlv){mvd(1);return}M++;if(M>11){M=0;Y++}renderCal()};
+$('td').onclick=function(){Y=now.getFullYear();M=now.getMonth();sel=todayIso;renderAll()};
+$('dpv').onclick=function(){$('pv').onclick()};$('dnx').onclick=function(){$('nx').onclick()};$('dnew').onclick=function(){openM(sel)};
+function setBar(b){document.body.dataset.bar=b;lsSet('nmamit-bar',b);$('bt_top').setAttribute('aria-pressed',b==='top');$('bt_bot').setAttribute('aria-pressed',b==='bottom')}
+$('bt_top').onclick=function(){setBar('top')};$('bt_bot').onclick=function(){setBar('bottom')};
+setBar(lsGet('nmamit-bar')==='top'?'top':'bottom');
+$('q').addEventListener('input',function(){qv=this.value.trim().toLowerCase();renderAll()});
+function setV(t){tlv=t;$('vm').setAttribute('aria-pressed',!t);$('vt').setAttribute('aria-pressed',t);renderAll()}
+$('vm').onclick=function(){setV(false)};$('vt').onclick=function(){setV(true)};$('bell').onclick=openN;
+$('tl').addEventListener('click',function(e){var t=e.target.closest('.trk');if(!t||e.target.closest('.bar2'))return;var v=ven(t.dataset.v);if(!v||!v.on)return;var r=t.getBoundingClientRect(),h=8+Math.floor((e.clientX-r.left)/r.width*12);h=Math.min(Math.max(h,8),19);openM(sel);$('bv').value=v.id;$('bs').value=pd(h)+':00';$('be').value=pd(h+1)+':00';check()});
+$('ov').addEventListener('click',function(e){var d=e.target.dataset.du,ns=e.target.dataset.ns,sv=e.target.dataset.sv,m;
+ if(d){m=Math.min(tm($('bs').value)+(+d),1439);$('be').value=pd(Math.floor(m/60))+':'+pd(m%60);check()}
+ if(ns){var du=Math.max(tm($('be').value)-tm($('bs').value),60);$('bs').value=ns;m=Math.min(tm(ns)+du,1439);$('be').value=pd(Math.floor(m/60))+':'+pd(m%60);check()}
+ if(sv){$('bv').value=sv;check()}});
+$('new').onclick=function(){openM(sel)};$('bd').onclick=function(){openM(sel)};$('bc').onclick=closeM;
+$('ov').addEventListener('click',function(e){if(e.target===$('ov'))closeM()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('ov').hidden)closeM()});
+['bv','bdte','bs','be','bn'].forEach(function(i){$(i).addEventListener('input',check)});
+$('bsub').onclick=function(){if(check().bad)return;var t=$('bt').value.trim();if(!t){$('bt').focus();return}
+ var d0=$('bdte').value;$('bsub').disabled=true;
+ api('POST','/bookings',{t:t,v:$('bv').value,d:d0,s:$('bs').value,e:$('be').value,p:$('bp').value,n:$('bn').value}).then(function(){sel=d0;var d=new Date(sel+'T00:00');Y=d.getFullYear();M=d.getMonth();closeM();return refresh()}).then(function(){toast(admin?'Booking added.':'Request sent! You will get an alert once an admin decides.')}).catch(function(e){$('bm').innerHTML='<div class="warn">'+esc(e.message)+'</div>';$('bsub').disabled=false;refresh()})};
+$('mine').addEventListener('click',function(e){var x=e.target.dataset.x;if(!x)return;api('DELETE','/bookings/'+x).then(function(){return refresh()}).then(function(){toast('Booking cancelled.')}).catch(function(e){toast(e.message)})});
+$('go').onclick=function(){var v=$('em').value.trim();$('emerr').textContent='';
+ if(!OTPMAIL){if(!okMail(v)){$('emerr').textContent='Only @nmamit.in and @nitte.in addresses can sign in.';return}
+  api('POST','/auth/request-otp',{email:v}).then(function(r){OTPMAIL=v;$('em').value='';$('em').type='text';$('em').placeholder='6-digit code';$('emlab').textContent='Enter the code sent to '+v;$('go').textContent='Verify';$('emerr').textContent=r.devCode?'Demo mode, your code is '+r.devCode:'';$('em').focus()}).catch(function(e){$('emerr').textContent=e.message})}
+ else api('POST','/auth/verify',{email:OTPMAIL,code:v}).then(function(r){resetLogin();signIn(r.email,r.token)}).catch(function(e){$('emerr').textContent=e.message})};
+$('em').addEventListener('keydown',function(e){if(e.key==='Enter')$('go').click()});
+$('out').onclick=signOut;
+function fillVenues(){var cur=$('bv').value;$('bv').innerHTML=VEN.map(function(v){return '<option value="'+v.id+'"'+(v.on?'':' disabled')+'>'+v.n+(v.on?'':' (closed)')+'</option>'}).join('');var o=VEN.filter(function(v){return v.on});var c=ven(cur);$('bv').value=(c&&c.on)?cur:(o[0]?o[0].id:'')}
+fillVenues();
+function hallList(){$('hbox').innerHTML='<h2 id="hh" style="font-size:22px">Manage venues</h2><button class="btn p" id="hadd" style="width:100%;margin-bottom:8px">+ Add venue</button>'+VEN.map(function(v){var d=[v.cap?'Capacity '+v.cap:'',v.loc,v.fac].filter(Boolean).map(esc).join(' · ');return '<div class="bk" style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><i style="background:'+v.c+';display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px"></i><b>'+v.n+'</b> '+(v.on?'':'<span class="tag">Closed</span>')+'<br><span style="color:var(--mut);font-size:13px">'+(d||'No details yet')+'</span></div><button class="btn" data-e="'+v.id+'">Edit</button></div>'}).join('')+'<div class="acts" style="justify-content:flex-end;margin-top:14px"><button class="btn" id="hcl">Close</button></div>'}
+var eid=null;
+function hallEdit(id){var nw=id==='new';var v=nw?{n:'',cap:'',loc:'',fac:'',c:PAL[VEN.length%PAL.length],on:true}:ven(id);eid=id;$('hbox').innerHTML='<h2 id="hh" style="font-size:22px">'+(nw?'Add venue':'Edit venue')+'</h2><div class="fld"><label for="hn">Venue name</label><input class="f" id="hn" maxlength="40"></div><div class="row fld"><div><label for="hc">Seating capacity</label><input class="f" id="hc" type="number" min="0"></div><div><label for="hcol">Calendar colour</label><input class="f" id="hcol" type="color" style="padding:4px"></div></div><div class="fld"><label for="hlo">Location (block, floor)</label><input class="f" id="hlo" maxlength="60"></div><div class="fld"><label for="hfa">Facilities (comma separated)</label><input class="f" id="hfa" maxlength="120"></div><div class="vr"><input type="checkbox" id="hon"><label for="hon" style="margin:0">Open for booking</label></div><div class="err" id="herr" role="alert"></div>'+(nw?'':'<div id="hcf"></div><button class="btn no" id="hrm" style="width:100%;margin-bottom:10px">Remove this venue</button>')+'<div class="acts" style="justify-content:flex-end"><button class="btn" id="hbk">Back</button><button class="btn p" id="hsv">Save</button></div>';
+ $('hn').value=v.n;$('hc').value=v.cap;$('hlo').value=v.loc;$('hfa').value=v.fac;$('hcol').value=v.c;$('hon').checked=v.on;$('hn').focus()}
+function hallSave(){var n=$('hn').value.replace(/[<>&"']/g,'').trim();if(!n){$('herr').textContent='Venue name is required.';return}
+ var body={n:n,cap:$('hc').value.trim(),loc:$('hlo').value.trim(),fac:$('hfa').value.trim(),c:$('hcol').value,on:$('hon').checked};
+ (eid==='new'?api('POST','/venues',body):api('PUT','/venues/'+eid,body)).then(function(){return refresh()}).then(function(){hallList();toast('Venue saved.')}).catch(function(e){$('herr').textContent=e.message})}
+$('mg').onclick=function(){hallList();$('hov').hidden=false};
+$('hbox').addEventListener('click',function(e){var t=e.target;if(t.dataset.e)hallEdit(t.dataset.e);else if(t.id==='hcl')$('hov').hidden=true;else if(t.id==='hbk')hallList();else if(t.id==='hsv')hallSave();
+ else if(t.id==='hadd')hallEdit('new');
+ else if(t.id==='hrm'){var n=B.filter(function(b){return b.v===eid}).length;$('hcf').innerHTML=VEN.length<=1?'<div class="warn">Keep at least one venue.</div>':'<div class="warn">Remove this venue'+(n?' and its '+n+' booking'+(n>1?'s':''):'')+'? This cannot be undone. To keep the bookings, switch off "Open for booking" instead.</div><button class="btn no" id="hrm2" style="width:100%;margin-bottom:10px">Yes, remove venue</button>'}
+ else if(t.id==='hrm2'){var id=eid;api('DELETE','/venues/'+id).then(function(){return refresh()}).then(function(){hallList();toast('Venue removed.')}).catch(function(e){$('hcf').innerHTML='<div class="warn">'+esc(e.message)+'</div>'})}});
+$('hov').addEventListener('click',function(e){if(e.target===$('hov'))$('hov').hidden=true});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')$('hov').hidden=true});
+renderFilters();
+$('toad').onclick=function(){$('ul').hidden=true;$('al').hidden=false;$('au').focus()};
+$('tous').onclick=function(){$('al').hidden=true;$('ul').hidden=false};
+$('adgo').onclick=function(){api('POST','/admin/login',{username:$('au').value.trim(),password:$('ap').value}).then(function(r){TOKEN=r.token;lsSet('nmamit-token',TOKEN);admin=r.username;user=null;$('ap').value='';$('aerr').textContent='';enter();refresh()}).catch(function(e){$('aerr').textContent=e.message})};
+$('ap').addEventListener('keydown',function(e){if(e.key==='Enter')$('adgo').click()});
+$('rq').addEventListener('click',function(e){var a=e.target.dataset.a;if(!a)return;var b=B.filter(function(x){return x.id===e.target.dataset.id})[0];if(!b)return;
+ if(a==='ok'&&okClash(b))return;api('PATCH','/bookings/'+b.id,{st:a,reason:a==='blocked'?$('r_'+b.id).value.trim():''}).then(function(){return refresh()}).then(function(){toast(a==='ok'?'Accepted. The slot is now confirmed.':'Blocked. The requester will see your reason.')}).catch(function(e){toast(e.message);refresh()})});
+if(TOKEN)api('GET','/me').then(function(m){if(m.role==='admin'){admin=m.username;user=null}else{user=m.email;admin=null}enter();refresh()}).catch(function(){signOut()});else renderAll();
+setInterval(function(){if((user||admin)&&$('ov').hidden&&$('hov').hidden)refresh()},20000);
+</script>
+<div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
